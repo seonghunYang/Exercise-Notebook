@@ -1,4 +1,4 @@
-import React, { createContext, Reducer, useContext, useReducer } from "react";
+import React, { createContext, Reducer, useContext } from "react";
 
 type CounterActionType = "INCREMENT" | "DECREMENT" | "CHANGE";
 
@@ -23,22 +23,10 @@ export const CounterReducer: Reducer<number, CounterAction> = function (
   }
 };
 
-const CountContext = createContext<number>(0);
-const CountDispatchContext = createContext<
+export const CountContext = createContext<number>(0);
+export const CountDispatchContext = createContext<
   React.Dispatch<CounterAction> | undefined
 >(undefined);
-
-export function CounterProvider({ children }: React.PropsWithChildren) {
-  const [count, dispatch] = useReducer(CounterReducer, 0);
-
-  return (
-    <CountContext.Provider value={count}>
-      <CountDispatchContext.Provider value={dispatch}>
-        {children}
-      </CountDispatchContext.Provider>
-    </CountContext.Provider>
-  );
-}
 
 type useCounterReducerContextReturn = [number, React.Dispatch<CounterAction>];
 

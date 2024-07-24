@@ -1,9 +1,23 @@
 import React from "react";
 import { CounterButton, CounterInput } from "./components";
-import { CounterProvider } from "./user-counter-reducer-context";
+import { CounterAction, CounterReducer } from "./user-counter-reducer-context";
+import { CounterProvider } from "./counter-provider";
 
-export default function Counter({ children }: React.PropsWithChildren) {
-  return <CounterProvider>{children}</CounterProvider>;
+export type OuterReducer = (
+  state: number,
+  action: CounterAction,
+  next: typeof CounterReducer
+) => number;
+
+interface CounterProps {
+  reducer?: OuterReducer;
+}
+
+export default function Counter({
+  reducer,
+  children,
+}: React.PropsWithChildren<CounterProps>) {
+  return <CounterProvider reducer={reducer}>{children}</CounterProvider>;
 }
 
 Counter.Button = CounterButton;
