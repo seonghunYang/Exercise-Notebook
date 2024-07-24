@@ -20,3 +20,26 @@ export const Default: Story = {
     );
   },
 };
+
+// const reducer =
+
+export const Control: Story = {
+  render: () => {
+    return (
+      <Counter
+        reducer={(state, action, next) => {
+          switch (action.type) {
+            case "INCREMENT":
+              return state + 2;
+            default:
+              return next(state, action);
+          }
+        }}
+      >
+        <Counter.Button countType={"increment"} />
+        <Counter.Input />
+        <Counter.Button countType={"decrement"} />
+      </Counter>
+    );
+  },
+};
