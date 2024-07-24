@@ -3,7 +3,7 @@ import { useCounterContext } from "../use-counter-context";
 interface CounterInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-export default function CounterInput({
+export function CounterInput({
   onChange,
   ...others
 }: CounterInputProps) {

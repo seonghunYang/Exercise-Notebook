@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { CounterContext } from "./use-counter-context";
+import { CounterButton, CounterInput } from "./components";
 
 export default function Counter({ children }: React.PropsWithChildren) {
   const [count, setCount] = useState(0);
@@ -29,3 +30,6 @@ export default function Counter({ children }: React.PropsWithChildren) {
     </CounterContext.Provider>
   );
 }
+
+Counter.Button = CounterButton;
+Counter.Input = CounterInput;

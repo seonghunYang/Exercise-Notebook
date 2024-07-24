@@ -8,7 +8,7 @@ interface CounterButtonProps
   countType: "increment" | "decrement";
 }
 
-export default function CounterButton({
+export function CounterButton({
   countType,
   onClick,
   ...others
