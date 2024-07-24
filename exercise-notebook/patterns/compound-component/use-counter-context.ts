@@ -7,14 +7,14 @@ interface CounterContextValue {
   onChange?: (count: number) => void;
 }
 
-export const CounterContext = createContext<CounterContextValue | undefined>({
-  count: 0,
-});
+export const CounterContext = createContext<CounterContextValue | undefined>(
+  undefined
+);
 
 export function useCounterContext() {
   const context = useContext(CounterContext);
 
-  if (!context) {
+  if (context === undefined) {
     throw new Error("Counter 컴포넌트 내부에서만 사용 가능합니다");
   }
 

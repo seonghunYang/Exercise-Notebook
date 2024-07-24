@@ -20,3 +20,9 @@ export const Default: Story = {
     );
   },
 };
+
+export const Only: Story = {
+  render: () => {
+    return <Counter.Button countType={"increment"} />;
+  },
+};
