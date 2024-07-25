@@ -1,16 +1,12 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-interface Item {
-  icon: string;
-  text: string;
-  description: string;
-}
-
-export const useDropdown = (items: Item[]) => {
+export const useDropdown = <T extends { text: string }>(items: T[]) => {
   // ... 상태 변수 ...
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+
+  const selectedItem = items[selectedIndex] || null;
 
   // 헬퍼 함수는 UI에 대한 일부 aria 속성을 반환할 수 있습니다.
   const getAriaAttributes = () => ({
@@ -28,14 +24,19 @@ export const useDropdown = (items: Item[]) => {
     }
   };
 
+  const updateSelectedIndex = (index: number) => {
+    setSelectedIndex(index);
+  };
+
   const toggleDropdown = () => setIsOpen((isOpen) => !isOpen);
 
   return {
     isOpen,
+    dropdownRef,
     toggleDropdown,
     handleKeyDown,
     selectedItem,
-    setSelectedItem,
+    updateSelectedIndex,
     selectedIndex,
     getAriaAttributes,
   };
