@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useDropdown } from "./useDropdown";
 
 interface Item {
   icon: string;
@@ -11,27 +12,33 @@ type DropdownProps = {
 };
 
 const Dropdown = ({ items }: DropdownProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
-
-  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    switch (
-      e.key
-      // ... 케이스 구문 ...
-      // ...  Enter, Space, ArrowDown and ArrowUp 키에 대한 핸들링 ...
-    ) {
-    }
-  };
+  const {
+    isOpen,
+    toggleDropdown,
+    handleKeyDown,
+    selectedItem,
+    setSelectedItem,
+    selectedIndex,
+    getAriaAttributes,
+  } = useDropdown(items);
 
   return (
-    <div className="dropdown" onKeyDown={handleKeyDown}>
+    <div
+      className="dropdown"
+      {...getAriaAttributes()}
+      onKeyDown={handleKeyDown}
+    >
       <Trigger
         label={selectedItem ? selectedItem.text : "Select an item..."}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={toggleDropdown}
       />
-      {isOpen && <DropdownMenu selectedIndex={selectedIndex} items={items} onItemClick={setSelectedItem} />}
+      {isOpen && (
+        <DropdownMenu
+          selectedIndex={selectedIndex}
+          items={items}
+          onItemClick={setSelectedItem}
+        />
+      )}
     </div>
   );
 };
