@@ -61,7 +61,8 @@ function Input({
 }: InputProps) {
   const ref = useRef<HTMLInputElement>(null);
   const [touced, setTouched] = useState(false);
-  const errorMessage = ref.current ? [ref.current.validationMessage] : [];
+
+  const errorMessage = getNativeErrorMessage(ref);
   const displayErrorMessage = touced && errorMessage;
 
   const handleBlur = () => {
@@ -82,14 +83,14 @@ function Input({
         type={type}
         ref={ref}
         required={isRequired}
-        onChange={onChange}
-        onFocus={hanldeFocust}
-        onBlur={handleBlur}
         value={value}
         name={name}
         id={`input-${name}`}
         aria-labelledby={`label-${name}`}
         aria-describedby={`error-${name}`}
+        onChange={onChange}
+        onFocus={hanldeFocust}
+        onBlur={handleBlur}
       />
       <div id={`error-${name}`}>
         {displayErrorMessage &&
@@ -99,4 +100,17 @@ function Input({
       </div>
     </div>
   );
+}
+
+function getNativeErrorMessage(
+  ref: React.RefObject<HTMLInputElement>
+): string[] {
+  if (!ref.current || ref.current.validationMessage === "") return [];
+
+  // message 커스터마이징
+  if (ref.current.validity.valueMissing) {
+    ref.current.setCustomValidity("필수 입력 항목입니다.");
+  }
+
+  return [ref.current.validationMessage];
 }
