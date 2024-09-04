@@ -89,11 +89,14 @@ function Input({
         name={name}
         id={`input-${name}`}
         aria-labelledby={`label-${name}`}
+        aria-describedby={`error-${name}`}
       />
-      {displayErrorMessage &&
-        displayErrorMessage.map((message) => (
-          <div key={message}>{message}</div>
-        ))}
+      <div id={`error-${name}`}>
+        {displayErrorMessage &&
+          displayErrorMessage.map((message) => (
+            <div key={message}>{message}</div>
+          ))}
+      </div>
     </div>
   );
 }
