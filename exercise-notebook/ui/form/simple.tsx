@@ -1,8 +1,38 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 
+function validateId(id: string) {
+  if (id === "") {
+    return "아이디를 입력해주세요.";
+  }
+  if (!id.match(/[a-z0-9]+@[a-z]+\.[a-z]{2,3}/)) {
+    return "이메일 형식이 아닙니다.";
+  }
+  return null;
+}
+
+function validatePassword(password: string) {
+  if (password === "") {
+    return "비밀번호를 입력해주세요.";
+  }
+  if (password.length < 8) {
+    return "비밀번호는 8자 이상이어야 합니다.";
+  }
+
+  if (!password.match(/[\{\}\[\]\/?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/)) {
+    return "특수문자가 포함되어야 합니다.";
+  }
+
+  return null;
+}
+
 export default function SimpleForm() {
   const [loginForm, setLoginForm] = useState({
+    id: "",
+    password: "",
+  });
+
+  const [errorMessage, setErrorMessage] = useState<Record<string, string>>({
     id: "",
     password: "",
   });
@@ -12,21 +42,35 @@ export default function SimpleForm() {
       ...loginForm,
       [event.currentTarget.name]: event.currentTarget.value,
     });
+
+    if (event.currentTarget.name === "id") {
+      setErrorMessage({
+        ...errorMessage,
+        id: validateId(event.currentTarget.value) ?? "",
+      });
+    }
+    if (event.currentTarget.name === "password") {
+      setErrorMessage({
+        ...errorMessage,
+        password: validatePassword(event.currentTarget.value) ?? "",
+      });
+    }
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    // console.log(
-    console.log(event);
+    // event.preventDefault();
+    // // console.log(
+    // console.log(event);
   };
 
   return (
     <form onSubmit={handleSubmit} noValidate>
       <Input
-        type="text"
+        type="email"
         isRequired={true}
         name="id"
         label="아이디"
+        errorMessage={errorMessage.id}
         onChange={handleChange}
         value={loginForm.id}
       />
@@ -34,6 +78,7 @@ export default function SimpleForm() {
         type="password"
         name="password"
         label="비밀번호"
+        errorMessage={errorMessage.password}
         onChange={handleChange}
         value={loginForm.password}
       />
@@ -48,6 +93,7 @@ interface InputProps {
   name: string;
   value: string;
   isRequired?: boolean;
+  errorMessage: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -57,18 +103,27 @@ function Input({
   name,
   value,
   isRequired,
+  errorMessage,
   onChange,
 }: InputProps) {
   const ref = useRef<HTMLInputElement>(null);
   const [touced, setTouched] = useState(false);
+  const [prevErrorMessage, setPrevErrorMessage] =
+    useState<string>(errorMessage);
 
-  const errorMessage = getNativeErrorMessage(ref);
-  const displayErrorMessage = touced && errorMessage;
+  // if (prevErrorMessage !== errorMessage) {
+  //   setPrevErrorMessage(errorMessage);
+  // }
+
+  // const errorMessage = getNativeErrorMessage(ref);
+  const displayErrorMessage = touced ? errorMessage : prevErrorMessage;
 
   const handleBlur = () => {
     setTouched(true);
+    setPrevErrorMessage(errorMessage);
   };
-  const hanldeFocust = () => {
+
+  const handleFocus = () => {
     setTouched(false);
   };
 
@@ -87,17 +142,18 @@ function Input({
         name={name}
         id={`input-${name}`}
         onChange={onChange}
-        onFocus={hanldeFocust}
         onBlur={handleBlur}
+        onFocus={handleFocus}
         aria-labelledby={`label-${name}`}
         aria-describedby={`error-${name}`}
         aria-invalid={errorMessage.length > 0}
       />
       <div id={`error-${name}`}>
-        {displayErrorMessage &&
+        {displayErrorMessage && <div>{displayErrorMessage}</div>}
+        {/* {displayErrorMessage &&
           displayErrorMessage.map((message) => (
             <div key={message}>{message}</div>
-          ))}
+          ))} */}
       </div>
     </div>
   );
@@ -109,9 +165,9 @@ function getNativeErrorMessage(
   if (!ref.current || ref.current.validationMessage === "") return [];
 
   // message 커스터마이징
-  if (ref.current.validity.valueMissing) {
-    ref.current.setCustomValidity("필수 입력 항목입니다.");
-  }
+  // if (ref.current.validity.valueMissing) {
+  //   ref.current.setCustomValidity("필수 입력 항목입니다.");
+  // }
 
   return [ref.current.validationMessage];
 }
