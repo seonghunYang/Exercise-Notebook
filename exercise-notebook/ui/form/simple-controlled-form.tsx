@@ -10,11 +10,15 @@ type LoginFormError = {
   [name in keyof LoginFormData]: string;
 };
 
+
+
 export default function ControlledForm() {
   const [loginForm, setLoginForm] = useState<LoginFormData>({
     id: "",
     password: "",
   });
+
+ 
 
   const [errorMessage, setErrorMessage] = useState<LoginFormError>({
     id: "",
