@@ -1,6 +1,11 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 
+interface LoginForm {
+  id: string;
+  password: string;
+}
+
 function validateId(id: string) {
   if (id === "") {
     return "아이디를 입력해주세요.";
@@ -26,13 +31,27 @@ function validatePassword(password: string) {
   return null;
 }
 
+function validate(loginForm: LoginForm) {
+  return {
+    id: validateId(loginForm.id) ?? "",
+    password: validatePassword(loginForm.password) ?? "",
+  };
+}
+
 export default function SimpleForm() {
-  const [loginForm, setLoginForm] = useState({
+  const [loginForm, setLoginForm] = useState<LoginForm>({
     id: "",
     password: "",
   });
 
-  const [errorMessage, setErrorMessage] = useState<Record<string, string>>({
+  const [wasSubmit, setWasSubmit] = useState(false);
+
+  // const errorMessage = {
+  //   id: validateId(loginForm.id) ?? "",
+  //   password: validatePassword(loginForm.password) ?? "",
+  // };
+
+  const [errorMessage, setErrorMessage] = useState({
     id: "",
     password: "",
   });
@@ -42,25 +61,25 @@ export default function SimpleForm() {
       ...loginForm,
       [event.currentTarget.name]: event.currentTarget.value,
     });
+  };
 
-    if (event.currentTarget.name === "id") {
-      setErrorMessage({
-        ...errorMessage,
-        id: validateId(event.currentTarget.value) ?? "",
-      });
-    }
-    if (event.currentTarget.name === "password") {
-      setErrorMessage({
-        ...errorMessage,
-        password: validatePassword(event.currentTarget.value) ?? "",
-      });
-    }
+  const handleInputBlur = () => {
+    const errorMessage = validate(loginForm);
+    setErrorMessage(errorMessage);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    // event.preventDefault();
-    // // console.log(
-    // console.log(event);
+    event.preventDefault();
+    setWasSubmit(true);
+
+    const errorMessage = validate(loginForm);
+    const invalid = Object.values(errorMessage).some(
+      (message) => message !== ""
+    );
+
+    if (invalid) {
+      setErrorMessage(errorMessage);
+    }
   };
 
   return (
@@ -73,6 +92,8 @@ export default function SimpleForm() {
         errorMessage={errorMessage.id}
         onChange={handleChange}
         value={loginForm.id}
+        wasSubmit={wasSubmit}
+        onBlur={handleInputBlur}
       />
       <Input
         type="password"
@@ -81,6 +102,8 @@ export default function SimpleForm() {
         errorMessage={errorMessage.password}
         onChange={handleChange}
         value={loginForm.password}
+        wasSubmit={wasSubmit}
+        onBlur={handleInputBlur}
       />
       <input type="submit" />
     </form>
@@ -94,7 +117,9 @@ interface InputProps {
   value: string;
   isRequired?: boolean;
   errorMessage: string;
+  wasSubmit: boolean;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 function Input({
@@ -104,28 +129,27 @@ function Input({
   value,
   isRequired,
   errorMessage,
+  wasSubmit,
   onChange,
+  onBlur,
 }: InputProps) {
   const ref = useRef<HTMLInputElement>(null);
   const [touced, setTouched] = useState(false);
-  const [prevErrorMessage, setPrevErrorMessage] =
-    useState<string>(errorMessage);
-
-  // if (prevErrorMessage !== errorMessage) {
-  //   setPrevErrorMessage(errorMessage);
-  // }
+  const [prevErrorMessage, setPrevErrorMessage] = useState<string>("");
 
   // const errorMessage = getNativeErrorMessage(ref);
-  const displayErrorMessage = touced ? errorMessage : prevErrorMessage;
+  // const displayErrorMessage = touced ? errorMessage : prevErrorMessage;
+  const displayErrorMessage = (touced || wasSubmit) && errorMessage;
 
-  const handleBlur = () => {
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     setTouched(true);
     setPrevErrorMessage(errorMessage);
+    onBlur(event);
   };
 
-  const handleFocus = () => {
-    setTouched(false);
-  };
+  // const handleFocus = () => {
+  //   setTouched(false);
+  // };
 
   return (
     <div>
@@ -143,17 +167,12 @@ function Input({
         id={`input-${name}`}
         onChange={onChange}
         onBlur={handleBlur}
-        onFocus={handleFocus}
         aria-labelledby={`label-${name}`}
         aria-describedby={`error-${name}`}
         aria-invalid={errorMessage.length > 0}
       />
       <div id={`error-${name}`}>
         {displayErrorMessage && <div>{displayErrorMessage}</div>}
-        {/* {displayErrorMessage &&
-          displayErrorMessage.map((message) => (
-            <div key={message}>{message}</div>
-          ))} */}
       </div>
     </div>
   );
