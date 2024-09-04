@@ -86,11 +86,12 @@ function Input({
         value={value}
         name={name}
         id={`input-${name}`}
-        aria-labelledby={`label-${name}`}
-        aria-describedby={`error-${name}`}
         onChange={onChange}
         onFocus={hanldeFocust}
         onBlur={handleBlur}
+        aria-labelledby={`label-${name}`}
+        aria-describedby={`error-${name}`}
+        aria-invalid={errorMessage.length > 0}
       />
       <div id={`error-${name}`}>
         {displayErrorMessage &&
