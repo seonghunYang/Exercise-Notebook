@@ -70,7 +70,9 @@ function getValue(
     case "checkbox":
       return typeof formState[event.currentTarget.name] === "boolean"
         ? event.currentTarget.checked
-        : event.currentTarget.value;
+        : event.currentTarget.checked
+          ? event.currentTarget.value
+          : "";
     case "number":
       return Number(event.currentTarget.value);
     default:
