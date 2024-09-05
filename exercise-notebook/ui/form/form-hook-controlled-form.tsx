@@ -15,8 +15,10 @@ export default function FormHookControlledForm() {
   const {
     formState: loginForm,
     errorMessage,
+    wasSubmitted,
     handleChange,
     vaidateForm,
+    handleSubmit,
   } = useForm<LoginFormData>({
     initialState: {
       id: "",
@@ -25,28 +27,22 @@ export default function FormHookControlledForm() {
     validateFn: validateLoginForm,
   });
 
-  const [wasSubmitted, setWasSubmitted] = useState<boolean>(false);
-
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     vaidateForm();
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    setWasSubmitted(true);
-
+  const onSubmit = (formData: LoginFormData) => {
     const valid = vaidateForm();
 
     if (!valid) {
       return;
     }
 
-    alert(JSON.stringify(loginForm));
+    alert(JSON.stringify(formData));
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Input
         label="아이디"
         name="id"

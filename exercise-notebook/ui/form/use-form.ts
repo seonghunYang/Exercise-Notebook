@@ -14,6 +14,7 @@ export function useForm<T extends Record<string, any>>({
   validateFn,
 }: UseFormArgs<T>) {
   const [formState, setFormState] = useState<T>(initialState);
+  const [wasSubmitted, setWasSubmitted] = useState<boolean>(false);
 
   const initialErrorMessage = (Object.keys(initialState) as (keyof T)[]).reduce<
     ErrorMessage<T>
@@ -41,10 +42,22 @@ export function useForm<T extends Record<string, any>>({
     return Object.values(errorMessage).every((v) => v === "");
   };
 
+  const handleSubmit = (onSubmit: (formData: T) => void) => {
+    return (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      setWasSubmitted(true);
+
+      onSubmit(formState);
+    };
+  };
+
   return {
     formState,
     errorMessage,
+    wasSubmitted,
     handleChange,
     vaidateForm,
+    handleSubmit,
+    setErrorMessage,
   };
 }
