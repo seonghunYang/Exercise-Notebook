@@ -30,9 +30,14 @@ export function useForm<T extends Record<string, any>>({
     useState<ErrorMessage<T>>(initialErrorMessage);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(event);
     setFormState({
       ...formState,
-      [event.currentTarget.name]: event.currentTarget.value,
+      [event.currentTarget.name]:
+        event.currentTarget.type === "checkbox" &&
+        typeof formState[event.currentTarget.name] === "boolean"
+          ? event.currentTarget.checked
+          : event.currentTarget.value,
     });
   };
 

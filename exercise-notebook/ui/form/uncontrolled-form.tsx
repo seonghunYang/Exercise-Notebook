@@ -1,5 +1,6 @@
 "use client";
 import React, { ReactText, useState } from "react";
+import { Checkbox, CheckboxGroup } from "./input/checkbox";
 
 interface LoginFormData {
   id: string;
@@ -62,15 +63,11 @@ export default function UncontrolledForm() {
         errorMessage={errorMessage["password"]}
         wasSubmitted={wasSubmitted}
       />
-      <Input
-        label="체크박스"
-        type="checkbox"
-        name="check"
-        // value
-        defaultValue="checl"
-        wasSubmitted={wasSubmitted}
-        errorMessage=""
-      />
+      <CheckboxGroup name="sport" label="Favorite sports">
+        <Checkbox value="soccer">Soccer</Checkbox>
+        <Checkbox value="baseball">Baseball</Checkbox>
+        <Checkbox value="basketball">Basketball</Checkbox>
+      </CheckboxGroup>
       <button type="submit">로그인</button>
     </form>
   );

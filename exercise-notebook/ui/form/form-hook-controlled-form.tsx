@@ -5,6 +5,7 @@ import { useForm } from "./use-form";
 interface LoginFormData {
   id: string;
   password: string;
+  isMarketing: boolean;
 }
 
 type LoginFormError = {
@@ -23,6 +24,7 @@ export default function FormHookControlledForm() {
     initialState: {
       id: "",
       password: "",
+      isMarketing: false,
     },
     validateFn: validateLoginForm,
   });
@@ -62,6 +64,16 @@ export default function FormHookControlledForm() {
         onChange={handleChange}
         onBlur={handleBlur}
       />
+      <Input
+        label="약관 동의"
+        name="isMarketing"
+        type="checkbox"
+        value={"isMarketing"}
+        checked={loginForm.isMarketing}
+        errorMessage={errorMessage["isMarketing"]}
+        wasSubmitted={wasSubmitted}
+        onChange={handleChange}
+      />
       <button type="submit">로그인</button>
     </form>
   );
@@ -74,6 +86,7 @@ interface InputProps {
   label: string;
   name: string;
   type?: React.HTMLInputTypeAttribute;
+  checked?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
@@ -85,6 +98,7 @@ function Input({
   label,
   name,
   type,
+  checked,
   onBlur,
   onChange,
 }: InputProps) {
@@ -103,6 +117,7 @@ function Input({
       <input
         type={type}
         name={name}
+        checked={checked}
         id={`input-${name}`}
         value={value}
         onChange={onChange}
@@ -122,7 +137,15 @@ function validateLoginForm(loginForm: LoginFormData): LoginFormError {
   return {
     id: validateId(loginForm.id),
     password: validatePassword(loginForm.password),
+    isMarketing: validateMarketing(loginForm.isMarketing),
   };
+}
+
+function validateMarketing(value: boolean): string {
+  if (!value) {
+    return "약관에 동의해주세요";
+  }
+  return "";
 }
 
 function validateId(value: string): string {
