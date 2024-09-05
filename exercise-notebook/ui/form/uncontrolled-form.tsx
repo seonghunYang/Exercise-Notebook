@@ -10,12 +10,16 @@ type LoginFormError = {
   [name in keyof LoginFormData]: string;
 };
 
-export default function RefactoringInputControlledForm() {
-  const [loginForm, setLoginForm] = useState<LoginFormData>({
-    id: "",
-    password: "",
-  });
+interface FormElements extends HTMLFormControlsCollection {
+  id: HTMLInputElement;
+  password: HTMLInputElement;
+}
 
+interface LoginFormElement extends HTMLFormElement {
+  readonly elements: FormElements;
+}
+
+export default function UncontrolledForm() {
   const [wasSubmitted, setWasSubmitted] = useState<boolean>(false);
 
   const [errorMessage, setErrorMessage] = useState<LoginFormError>({
@@ -23,30 +27,22 @@ export default function RefactoringInputControlledForm() {
     password: "",
   });
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setLoginForm({
-      ...loginForm,
-      [event.currentTarget.name]: event.currentTarget.value,
-    });
-  };
-
-  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    const validationResult = validateLoginForm(loginForm);
-    setErrorMessage(validationResult);
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<LoginFormElement>) => {
     event.preventDefault();
 
+    const formData = new FormData(event.currentTarget);
+    const loginForm = Object.fromEntries(formData);
+    console.log("loginForm", loginForm);
+    // event.currentTarget.elements.id.value
     setWasSubmitted(true);
-    const validationResult = validateLoginForm(loginForm);
+    // const validationResult = validateLoginForm(loginForm);
 
-    const valid = Object.values(validationResult).every((v) => v === "");
+    // const valid = Object.values(validationResult).every((v) => v === "");
 
-    if (!valid) {
-      setErrorMessage(validationResult);
-      return;
-    }
+    // if (!valid) {
+    //   setErrorMessage(validationResult);
+    //   return;
+    // }
 
     alert(JSON.stringify(loginForm));
   };
@@ -56,21 +52,24 @@ export default function RefactoringInputControlledForm() {
       <Input
         label="아이디"
         name="id"
-        value={loginForm.id}
         errorMessage={errorMessage["id"]}
         wasSubmitted={wasSubmitted}
-        onChange={handleChange}
-        onBlur={handleBlur}
       />
       <Input
         label="비밀번호"
         name="password"
         type="password"
-        value={loginForm.password}
         errorMessage={errorMessage["password"]}
         wasSubmitted={wasSubmitted}
-        onChange={handleChange}
-        onBlur={handleBlur}
+      />
+      <Input
+        label="체크박스"
+        type="checkbox"
+        name="check"
+        // value
+        defaultValue="checl"
+        wasSubmitted={wasSubmitted}
+        errorMessage=""
       />
       <button type="submit">로그인</button>
     </form>
@@ -78,7 +77,7 @@ export default function RefactoringInputControlledForm() {
 }
 
 interface InputProps {
-  value: string;
+  defaultValue?: string;
   errorMessage: string;
   wasSubmitted: boolean;
   label: string;
@@ -89,7 +88,7 @@ interface InputProps {
 }
 
 function Input({
-  value,
+  defaultValue = "",
   errorMessage,
   wasSubmitted,
   label,
@@ -98,11 +97,18 @@ function Input({
   onBlur,
   onChange,
 }: InputProps) {
+  const [value, setValue] = useState(defaultValue);
   const [touched, setTouched] = useState(false);
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     setTouched(true);
     onBlur?.(event);
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(event.currentTarget.value);
+    onChange?.(event);
+    console.log(name, event.currentTarget.value);
   };
 
   return (
@@ -115,7 +121,7 @@ function Input({
         name={name}
         id={`input-${name}`}
         value={value}
-        onChange={onChange}
+        onChange={handleChange}
         onBlur={handleBlur}
         aria-labelledby={`label-${name}`}
         aria-describedby={`error-${name}`}
