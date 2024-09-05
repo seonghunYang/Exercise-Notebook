@@ -6,6 +6,8 @@ interface LoginFormData {
   id: string;
   password: string;
   isMarketing: boolean;
+  age: number;
+  gender: string;
 }
 
 type LoginFormError = {
@@ -25,9 +27,13 @@ export default function FormHookControlledForm() {
       id: "",
       password: "",
       isMarketing: false,
+      age: 0,
+      gender: "",
     },
     validateFn: validateLoginForm,
   });
+
+  console.log(loginForm);
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     vaidateForm();
@@ -65,6 +71,16 @@ export default function FormHookControlledForm() {
         onBlur={handleBlur}
       />
       <Input
+        label="나이"
+        name="age"
+        type="number"
+        value={loginForm.age}
+        errorMessage={errorMessage.age}
+        wasSubmitted={wasSubmitted}
+        onChange={handleChange}
+        onBlur={handleBlur}
+      />
+      <Input
         label="약관 동의"
         name="isMarketing"
         type="checkbox"
@@ -74,13 +90,22 @@ export default function FormHookControlledForm() {
         wasSubmitted={wasSubmitted}
         onChange={handleChange}
       />
+      <RadioInput
+        label="성별"
+        inputs={["boys", "girs"]}
+        value={loginForm.gender}
+        onChange={handleChange}
+        errorMessage={errorMessage.gender}
+        wasSubmitted={wasSubmitted}
+        name="gender"
+      />
       <button type="submit">로그인</button>
     </form>
   );
 }
 
 interface InputProps {
-  value: string;
+  value: string | number;
   errorMessage: string;
   wasSubmitted: boolean;
   label: string;
@@ -133,11 +158,59 @@ function Input({
   );
 }
 
+interface RadioInputProps {
+  value: string;
+  errorMessage: string;
+  wasSubmitted: boolean;
+  label: string;
+  name: string;
+  inputs: string[];
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  // onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
+}
+
+function RadioInput({
+  value,
+  name,
+  label,
+  wasSubmitted,
+  errorMessage,
+  inputs,
+  onChange,
+}: RadioInputProps) {
+  return (
+    <div>
+      <span>{label}</span>
+      {inputs.map((input, idx) => (
+        <label id={`label-${name}-${idx}`} htmlFor={`input-${name}-${idx}`}>
+          <input
+            type={"radio"}
+            name={name}
+            checked={value === input}
+            id={`input-${name}-${idx}`}
+            value={input}
+            onChange={onChange}
+            aria-labelledby={`label-${name}=${idx}`}
+            aria-describedby={`error-${name}`}
+            aria-invalid={errorMessage ? true : false}
+          />
+          {input}
+        </label>
+      ))}
+      {errorMessage && wasSubmitted && (
+        <div id={`error-${name}`}>{errorMessage}</div>
+      )}
+    </div>
+  );
+}
+
 function validateLoginForm(loginForm: LoginFormData): LoginFormError {
   return {
     id: validateId(loginForm.id),
     password: validatePassword(loginForm.password),
     isMarketing: validateMarketing(loginForm.isMarketing),
+    age: "",
+    gender: loginForm.gender === "" ? "성별을 선택해주세요" : "",
   };
 }
 

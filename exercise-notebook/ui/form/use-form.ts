@@ -30,14 +30,9 @@ export function useForm<T extends Record<string, any>>({
     useState<ErrorMessage<T>>(initialErrorMessage);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event);
     setFormState({
       ...formState,
-      [event.currentTarget.name]:
-        event.currentTarget.type === "checkbox" &&
-        typeof formState[event.currentTarget.name] === "boolean"
-          ? event.currentTarget.checked
-          : event.currentTarget.value,
+      [event.currentTarget.name]: getValue(event, formState),
     });
   };
 
@@ -65,4 +60,20 @@ export function useForm<T extends Record<string, any>>({
     handleSubmit,
     setErrorMessage,
   };
+}
+
+function getValue(
+  event: React.ChangeEvent<HTMLInputElement>,
+  formState: Record<string, unknown>
+) {
+  switch (event.currentTarget.type) {
+    case "checkbox":
+      return typeof formState[event.currentTarget.name] === "boolean"
+        ? event.currentTarget.checked
+        : event.currentTarget.value;
+    case "number":
+      return Number(event.currentTarget.value);
+    default:
+      return event.currentTarget.value;
+  }
 }

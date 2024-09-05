@@ -5,6 +5,7 @@ import RefactoringInputControlledForm from "@/ui/form/refactoring-input-controll
 import UncontrolledForm from "@/ui/form/uncontrolled-form";
 import FormHookControlledForm from "@/ui/form/form-hook-controlled-form";
 import { Checkbox, CheckboxGroup } from "@/ui/form/input/checkbox";
+import { NumberField } from "@/ui/form/input/numberfiled";
 
 export default function Home() {
   return (
