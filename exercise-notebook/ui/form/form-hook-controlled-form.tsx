@@ -9,6 +9,7 @@ interface LoginFormData {
   age: number;
   gender: string;
   location: string;
+  birthday: string;
 }
 
 type LoginFormError = {
@@ -55,6 +56,7 @@ export default function FormHookControlledForm() {
       age: 0,
       gender: "",
       location: "",
+      birthday: "",
     },
     validateFn: validateLoginForm,
   });
@@ -124,7 +126,6 @@ export default function FormHookControlledForm() {
         name="gender"
       />
       <SearchInput
-        type={"search"}
         label="지역 검색"
         value={loginForm.location}
         errorMessage={errorMessage.location}
@@ -145,12 +146,30 @@ export default function FormHookControlledForm() {
         }}
         searchFilter={(data) => data.name.includes(loginForm.location)}
       />
+      <DateInput
+        name="birthday"
+        value={loginForm.birthday}
+        errorMessage={errorMessage.birthday}
+        label="생일"
+        wasSubmitted={wasSubmitted}
+        onChange={handleChange}
+        min="2024-07-18"
+      />
       <button type="submit">로그인</button>
     </form>
   );
 }
 
-interface SearchInputProps<T> extends InputProps {
+interface DateInputPros extends Omit<InputProps, "type"> {
+  max?: string;
+  min?: string;
+}
+
+function DateInput({ ...props }: DateInputPros) {
+  return <Input type={"date"} {...props} />;
+}
+
+interface SearchInputProps<T> extends Omit<InputProps, "type"> {
   searchListData: T[];
   searchRender: (data: T) => React.ReactNode;
   searchFilter: (data: T) => boolean;
@@ -192,7 +211,12 @@ function SearchInput<T>({
           onClick={handleUnderlayClick}
         ></div>
       )}
-      <Input value={value} {...props} onFocus={handleInputFocus} />
+      <Input
+        value={value}
+        type={"search"}
+        {...props}
+        onFocus={handleInputFocus}
+      />
       {open && (
         <div
           style={{
@@ -278,7 +302,6 @@ interface RadioInputProps {
   name: string;
   inputs: string[];
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  // onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 function RadioInput({
@@ -328,6 +351,7 @@ function validateLoginForm(loginForm: LoginFormData): LoginFormError {
     age: "",
     gender: loginForm.gender === "" ? "성별을 선택해주세요" : "",
     location: loginForm.location === "" ? "지역을 선택해주세요" : "",
+    birthday: loginForm.birthday === "" ? "생일을 선택해주세요" : "",
   };
 }
 
