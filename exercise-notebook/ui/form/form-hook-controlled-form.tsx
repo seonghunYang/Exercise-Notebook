@@ -1,6 +1,9 @@
 "use client";
 import React, { ReactText, useState } from "react";
 import { useForm } from "./use-form";
+import { DateInput } from "@/form/components/date-input";
+import { SearchInput, SearchInputProps } from "@/form/components/search-input";
+import { Input } from "@/form/components/input";
 
 interface LoginFormData {
   id: string;
@@ -10,6 +13,7 @@ interface LoginFormData {
   gender: string;
   location: string;
   birthday: string;
+  favorite: string;
 }
 
 type LoginFormError = {
@@ -57,6 +61,7 @@ export default function FormHookControlledForm() {
       gender: "",
       location: "",
       birthday: "",
+      favorite: "",
     },
     validateFn: validateLoginForm,
   });
@@ -155,139 +160,72 @@ export default function FormHookControlledForm() {
         onChange={handleChange}
         min="2024-07-18"
       />
+      <Select
+        value={loginForm.favorite}
+        errorMessage={errorMessage.favorite}
+        wasSubmitted={wasSubmitted}
+        label="선호하는 것"
+        name="favorite"
+        onChange={handleChange}
+      >
+        <option value="">선택해주세여</option>
+        <optgroup label="숫자">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </optgroup>
+        <optgroup label="문자">
+          <option value="a">a</option>
+          <option value="b">b</option>
+          <option value="c">c</option>
+          <option value="d">d</option>
+        </optgroup>
+      </Select>
       <button type="submit">로그인</button>
     </form>
   );
 }
 
-interface DateInputPros extends Omit<InputProps, "type"> {
-  max?: string;
-  min?: string;
-}
-
-function DateInput({ ...props }: DateInputPros) {
-  return <Input type={"date"} {...props} />;
-}
-
-interface SearchInputProps<T> extends Omit<InputProps, "type"> {
-  searchListData: T[];
-  searchRender: (data: T) => React.ReactNode;
-  searchFilter: (data: T) => boolean;
-}
-
-function SearchInput<T>({
-  searchListData,
-  value,
-  searchRender,
-  searchFilter,
-  ...props
-}: SearchInputProps<T>) {
-  const [open, setOpen] = useState(false);
-
-  const handleInputFocus = (event: React.FocusEvent<HTMLInputElement>) => {
-    props.onFocus?.(event);
-    setOpen(true);
-  };
-
-  const handleUnderlayClick = () => {
-    setOpen(false);
-  };
-
-  const searchedList = searchListData.filter(searchFilter);
-
-  return (
-    <div
-      style={{
-        position: "relative",
-      }}
-    >
-      {open && (
-        <div
-          style={{
-            position: "fixed",
-            inset: "0px",
-          }}
-          aria-hidden={true}
-          onClick={handleUnderlayClick}
-        ></div>
-      )}
-      <Input
-        value={value}
-        type={"search"}
-        {...props}
-        onFocus={handleInputFocus}
-      />
-      {open && (
-        <div
-          style={{
-            position: "absolute",
-            backgroundColor: "white",
-          }}
-        >
-          {
-            <div>
-              {searchedList.map((data) => {
-                return searchRender(data);
-              })}
-            </div>
-          }
-        </div>
-      )}
-    </div>
-  );
-}
-
-interface InputProps {
-  value: string | number;
+interface SelectProps {
+  value: string;
   errorMessage: string;
   wasSubmitted: boolean;
   label: string;
   name: string;
-  type?: React.HTMLInputTypeAttribute;
-  checked?: boolean;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
-  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  onBlur?: (event: React.FocusEvent<HTMLSelectElement>) => void;
+  onFocus?: (event: React.FocusEvent<HTMLSelectElement>) => void;
 }
 
-function Input({
+function Select({
+  name,
+  label,
   value,
   errorMessage,
   wasSubmitted,
-  label,
-  name,
-  type,
-  checked,
-  onBlur,
   onChange,
+  children,
   ...props
-}: InputProps) {
-  const [touched, setTouched] = useState(false);
-
-  const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-    setTouched(true);
-    onBlur?.(event);
-  };
-
+}: React.PropsWithChildren<SelectProps>) {
   return (
     <div>
       <label id={`label-${name}`} htmlFor={`input-${name}`}>
         {label}
       </label>
-      <input
+      <select
         {...props}
-        type={type}
-        name={name}
-        checked={checked}
-        id={`input-${name}`}
         value={value}
+        name={name}
+        id={`input-${name}`}
         onChange={onChange}
-        onBlur={handleBlur}
         aria-labelledby={`label-${name}`}
         aria-describedby={`error-${name}`}
         aria-invalid={errorMessage ? true : false}
-      />
-      {errorMessage && (touched || wasSubmitted) && (
+      >
+        {children}
+      </select>
+      {errorMessage && wasSubmitted && (
         <div id={`error-${name}`}>{errorMessage}</div>
       )}
     </div>
@@ -352,6 +290,7 @@ function validateLoginForm(loginForm: LoginFormData): LoginFormError {
     gender: loginForm.gender === "" ? "성별을 선택해주세요" : "",
     location: loginForm.location === "" ? "지역을 선택해주세요" : "",
     birthday: loginForm.birthday === "" ? "생일을 선택해주세요" : "",
+    favorite: loginForm.favorite === "" ? "가장 선호하는걸 선택해주세요" : "",
   };
 }
 

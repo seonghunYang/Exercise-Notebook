@@ -1,5 +1,5 @@
-import { InputProps, Input } from "@/ui/form/form-hook-controlled-form";
 import React from "react";
+import { Input, InputProps } from "./input";
 
 interface DateInputPros extends Omit<InputProps, "type"> {
   max?: string;

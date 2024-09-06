@@ -1,5 +1,5 @@
-import { Input, InputProps } from "@/ui/form/form-hook-controlled-form";
 import React, { useState } from "react";
+import { Input, InputProps } from "./input";
 
 export interface SearchInputProps<T> extends Omit<InputProps, "type"> {
   searchListData: T[];
