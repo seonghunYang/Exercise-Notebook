@@ -8,11 +8,35 @@ interface LoginFormData {
   isMarketing: boolean;
   age: number;
   gender: string;
+  location: string;
 }
 
 type LoginFormError = {
   [name in keyof LoginFormData]: string;
 };
+
+const locationsData = [
+  {
+    name: "us",
+    value: "text1",
+  },
+  {
+    name: "korea",
+    value: "text2",
+  },
+  {
+    name: "mexico",
+    value: "text3",
+  },
+  {
+    name: "france",
+    value: "text4",
+  },
+  {
+    name: "japan",
+    value: "text5",
+  },
+];
 
 export default function FormHookControlledForm() {
   const {
@@ -22,6 +46,7 @@ export default function FormHookControlledForm() {
     handleChange,
     vaidateForm,
     handleSubmit,
+    updateFormState,
   } = useForm<LoginFormData>({
     initialState: {
       id: "",
@@ -29,11 +54,10 @@ export default function FormHookControlledForm() {
       isMarketing: false,
       age: 0,
       gender: "",
+      location: "",
     },
     validateFn: validateLoginForm,
   });
-
-  console.log(loginForm);
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     vaidateForm();
@@ -99,8 +123,93 @@ export default function FormHookControlledForm() {
         wasSubmitted={wasSubmitted}
         name="gender"
       />
+      <SearchInput
+        type={"search"}
+        label="지역 검색"
+        value={loginForm.location}
+        errorMessage={errorMessage.location}
+        wasSubmitted={wasSubmitted}
+        onChange={handleChange}
+        name="location"
+        searchListData={locationsData}
+        searchRender={(data) => {
+          return (
+            <div
+              onClick={() => {
+                updateFormState({ location: data.name });
+              }}
+            >
+              {data.name}
+            </div>
+          );
+        }}
+        searchFilter={(data) => data.name.includes(loginForm.location)}
+      />
       <button type="submit">로그인</button>
     </form>
+  );
+}
+
+interface SearchInputProps<T> extends InputProps {
+  searchListData: T[];
+  searchRender: (data: T) => React.ReactNode;
+  searchFilter: (data: T) => boolean;
+}
+
+function SearchInput<T>({
+  searchListData,
+  value,
+  searchRender,
+  searchFilter,
+  ...props
+}: SearchInputProps<T>) {
+  const [open, setOpen] = useState(false);
+
+  const handleInputFocus = (event: React.FocusEvent<HTMLInputElement>) => {
+    props.onFocus?.(event);
+    setOpen(true);
+  };
+
+  const handleUnderlayClick = () => {
+    setOpen(false);
+  };
+
+  const searchedList = searchListData.filter(searchFilter);
+
+  return (
+    <div
+      style={{
+        position: "relative",
+      }}
+    >
+      {open && (
+        <div
+          style={{
+            position: "fixed",
+            inset: "0px",
+          }}
+          aria-hidden={true}
+          onClick={handleUnderlayClick}
+        ></div>
+      )}
+      <Input value={value} {...props} onFocus={handleInputFocus} />
+      {open && (
+        <div
+          style={{
+            position: "absolute",
+            backgroundColor: "white",
+          }}
+        >
+          {
+            <div>
+              {searchedList.map((data) => {
+                return searchRender(data);
+              })}
+            </div>
+          }
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -114,6 +223,7 @@ interface InputProps {
   checked?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
 }
 
 function Input({
@@ -126,6 +236,7 @@ function Input({
   checked,
   onBlur,
   onChange,
+  ...props
 }: InputProps) {
   const [touched, setTouched] = useState(false);
 
@@ -140,6 +251,7 @@ function Input({
         {label}
       </label>
       <input
+        {...props}
         type={type}
         name={name}
         checked={checked}
@@ -182,7 +294,11 @@ function RadioInput({
     <div>
       <span>{label}</span>
       {inputs.map((input, idx) => (
-        <label id={`label-${name}-${idx}`} htmlFor={`input-${name}-${idx}`}>
+        <label
+          key={input}
+          id={`label-${name}-${idx}`}
+          htmlFor={`input-${name}-${idx}`}
+        >
           <input
             type={"radio"}
             name={name}
@@ -211,6 +327,7 @@ function validateLoginForm(loginForm: LoginFormData): LoginFormError {
     isMarketing: validateMarketing(loginForm.isMarketing),
     age: "",
     gender: loginForm.gender === "" ? "성별을 선택해주세요" : "",
+    location: loginForm.location === "" ? "지역을 선택해주세요" : "",
   };
 }
 

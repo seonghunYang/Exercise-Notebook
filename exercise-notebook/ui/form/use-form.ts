@@ -51,6 +51,13 @@ export function useForm<T extends Record<string, any>>({
     };
   };
 
+  const updateFormState = (formData: Partial<T>) => {
+    setFormState({
+      ...formState,
+      ...formData,
+    });
+  };
+
   return {
     formState,
     errorMessage,
@@ -59,6 +66,7 @@ export function useForm<T extends Record<string, any>>({
     vaidateForm,
     handleSubmit,
     setErrorMessage,
+    updateFormState,
   };
 }
 
