@@ -29,7 +29,9 @@ export function useForm<T extends Record<string, any>>({
   const [errorMessage, setErrorMessage] =
     useState<ErrorMessage<T>>(initialErrorMessage);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFormState({
       ...formState,
       [event.currentTarget.name]: getValue(event, formState),
@@ -71,7 +73,7 @@ export function useForm<T extends Record<string, any>>({
 }
 
 function getValue(
-  event: React.ChangeEvent<HTMLInputElement>,
+  event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   formState: Record<string, unknown>
 ) {
   switch (event.currentTarget.type) {
