@@ -1,9 +1,11 @@
 "use client";
-import React, { ReactText, useState } from "react";
+import React from "react";
 import { useForm } from "./use-form";
 import { DateInput } from "@/form/components/date-input";
-import { SearchInput, SearchInputProps } from "@/form/components/search-input";
+import { SearchInput } from "@/form/components/search-input";
 import { Input } from "@/form/components/input";
+import { RadioInput } from "@/form/components/radio-input";
+import { Select } from "@/form/components/select";
 
 interface LoginFormData {
   id: string;
@@ -184,100 +186,6 @@ export default function FormHookControlledForm() {
       </Select>
       <button type="submit">로그인</button>
     </form>
-  );
-}
-
-interface SelectProps {
-  value: string;
-  errorMessage: string;
-  wasSubmitted: boolean;
-  label: string;
-  name: string;
-  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-  onBlur?: (event: React.FocusEvent<HTMLSelectElement>) => void;
-  onFocus?: (event: React.FocusEvent<HTMLSelectElement>) => void;
-}
-
-function Select({
-  name,
-  label,
-  value,
-  errorMessage,
-  wasSubmitted,
-  onChange,
-  children,
-  ...props
-}: React.PropsWithChildren<SelectProps>) {
-  return (
-    <div>
-      <label id={`label-${name}`} htmlFor={`input-${name}`}>
-        {label}
-      </label>
-      <select
-        {...props}
-        value={value}
-        name={name}
-        id={`input-${name}`}
-        onChange={onChange}
-        aria-labelledby={`label-${name}`}
-        aria-describedby={`error-${name}`}
-        aria-invalid={errorMessage ? true : false}
-      >
-        {children}
-      </select>
-      {errorMessage && wasSubmitted && (
-        <div id={`error-${name}`}>{errorMessage}</div>
-      )}
-    </div>
-  );
-}
-
-interface RadioInputProps {
-  value: string;
-  errorMessage: string;
-  wasSubmitted: boolean;
-  label: string;
-  name: string;
-  inputs: string[];
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-function RadioInput({
-  value,
-  name,
-  label,
-  wasSubmitted,
-  errorMessage,
-  inputs,
-  onChange,
-}: RadioInputProps) {
-  return (
-    <div>
-      <span>{label}</span>
-      {inputs.map((input, idx) => (
-        <label
-          key={input}
-          id={`label-${name}-${idx}`}
-          htmlFor={`input-${name}-${idx}`}
-        >
-          <input
-            type={"radio"}
-            name={name}
-            checked={value === input}
-            id={`input-${name}-${idx}`}
-            value={input}
-            onChange={onChange}
-            aria-labelledby={`label-${name}=${idx}`}
-            aria-describedby={`error-${name}`}
-            aria-invalid={errorMessage ? true : false}
-          />
-          {input}
-        </label>
-      ))}
-      {errorMessage && wasSubmitted && (
-        <div id={`error-${name}`}>{errorMessage}</div>
-      )}
-    </div>
   );
 }
 
