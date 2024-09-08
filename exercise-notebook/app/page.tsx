@@ -9,11 +9,12 @@ import { NumberField } from "@/ui/form/input/numberfiled";
 import SearchBar from "@/ui/search-bar/search-bar";
 import SearchBarEffect from "@/ui/search-bar/search-bar-effect";
 import DebouncedSearchbar from "@/ui/search-bar/debounce-search-bar";
+import SWRSearchbar from "@/ui/search-bar/swr-search-bar";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <DebouncedSearchbar />
+      <SWRSearchbar />
     </main>
   );
 }
