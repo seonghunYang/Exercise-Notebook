@@ -6,11 +6,14 @@ import UncontrolledForm from "@/ui/form/uncontrolled-form";
 import FormHookControlledForm from "@/ui/form/form-hook-controlled-form";
 import { Checkbox, CheckboxGroup } from "@/ui/form/input/checkbox";
 import { NumberField } from "@/ui/form/input/numberfiled";
+import SearchBar from "@/ui/search-bar/search-bar";
+import SearchBarEffect from "@/ui/search-bar/search-bar-effect";
+import DebouncedSearchbar from "@/ui/search-bar/debounce-search-bar";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <FormHookControlledForm />
+      <DebouncedSearchbar />
     </main>
   );
 }

@@ -24,11 +24,13 @@ export function useFetch<T, E = any>({ url, fetcher }: UseFetchArgs<T>) {
             if (prev) return;
             return prev;
           });
+
           setData(data);
         }
       } catch (error: any) {
         if (!ignore) {
           setError(error);
+          // throw error; 상위에서 에러를 처리해야 할 경우(error boundary나)
         }
       } finally {
         if (!ignore) {
