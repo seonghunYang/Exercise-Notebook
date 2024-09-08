@@ -1,9 +1,18 @@
 import { NextRequest } from "next/server";
 import { stock_list } from "./data";
 
+async function delay(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve("");
+    }, ms);
+  });
+}
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const query = searchParams.get("query");
+  await delay(1000);
 
   if (query === null) {
     return Response.json({
