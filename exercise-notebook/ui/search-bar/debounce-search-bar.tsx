@@ -10,7 +10,7 @@ async function fetchStockList(url: string) {
   const response = await fetch(url);
   const { data }: { data: Stock[] } = await response.json();
 
-  if (Math.random() < 0.4) throw Error("서버 에러가 발생했습니다.");
+  // if (Math.random() < 0.4) throw Error("서버 에러가 발생했습니다.");
 
   return data;
 }
@@ -25,6 +25,7 @@ export default function DebouncedSearchbar() {
   } = useFetch<Stock[], Error>({
     url: `/api/stocks?query=${debouncedQuery}`,
     fetcher: fetchStockList,
+    keepPreviousData: true,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

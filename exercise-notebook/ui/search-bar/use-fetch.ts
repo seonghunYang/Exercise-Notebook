@@ -3,14 +3,24 @@ import { useState, useEffect } from "react";
 interface UseFetchArgs<T> {
   url: string;
   fetcher: (url: string) => Promise<T>;
+  keepPreviousData?: boolean;
 }
-export function useFetch<T, E = any>({ url, fetcher }: UseFetchArgs<T>) {
+export function useFetch<T, E = any>({
+  url,
+  fetcher,
+  keepPreviousData = false,
+}: UseFetchArgs<T>) {
   const [data, setData] = useState<T>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<E>();
 
   useEffect(() => {
     let ignore = false;
+
+    if (!keepPreviousData) {
+      // 이전 데이터 초기화
+      setData(undefined);
+    }
 
     async function startFetching() {
       setIsLoading(true);

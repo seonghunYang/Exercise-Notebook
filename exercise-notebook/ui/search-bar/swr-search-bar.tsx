@@ -31,8 +31,6 @@ export default function SWRSearchbar() {
     }
   );
 
-  console.log(error);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.currentTarget.value);
   };
