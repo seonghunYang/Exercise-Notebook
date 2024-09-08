@@ -16,7 +16,7 @@ async function fetchStockList(url: string) {
 export default function DebouncedSearchbar() {
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouceValue(query);
-  const { data: searchedStockList } = useFetch<Stock[]>({
+  const { data: searchedStockList, isLoading } = useFetch<Stock[]>({
     url: `/api/stocks?query=${debouncedQuery}`,
     fetcher: fetchStockList,
   });
@@ -27,10 +27,18 @@ export default function DebouncedSearchbar() {
 
   return (
     <SearchInput value={query} onChange={handleChange}>
-      <div>검색 결과</div>
-      {searchedStockList?.map((stock) => (
-        <div key={stock.name}>{stock.name}</div>
-      ))}{" "}
+      {
+        <div
+          style={{
+            opacity: isLoading ? 0.4 : 1,
+          }}
+        >
+          <div>검색 결과</div>
+          {searchedStockList?.map((stock) => (
+            <div key={stock.name}>{stock.name}</div>
+          ))}
+        </div>
+      }
     </SearchInput>
   );
 }
