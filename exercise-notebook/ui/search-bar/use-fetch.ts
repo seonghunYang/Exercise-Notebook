@@ -4,20 +4,36 @@ interface UseFetchArgs<T> {
   url: string;
   fetcher: (url: string) => Promise<T>;
 }
-export function useFetch<T>({ url, fetcher }: UseFetchArgs<T>) {
+export function useFetch<T, E = any>({ url, fetcher }: UseFetchArgs<T>) {
   const [data, setData] = useState<T>();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<E>();
 
   useEffect(() => {
     let ignore = false;
 
     async function startFetching() {
       setIsLoading(true);
-      const data = await fetcher(url);
 
-      if (!ignore) {
-        setData(data);
-        setIsLoading(false);
+      try {
+        const data = await fetcher(url);
+
+        if (!ignore) {
+          // 데이터 생기면 에러 초기화
+          setError((prev) => {
+            if (prev) return;
+            return prev;
+          });
+          setData(data);
+        }
+      } catch (error: any) {
+        if (!ignore) {
+          setError(error);
+        }
+      } finally {
+        if (!ignore) {
+          setIsLoading(false);
+        }
       }
     }
 
@@ -31,5 +47,6 @@ export function useFetch<T>({ url, fetcher }: UseFetchArgs<T>) {
   return {
     data,
     isLoading,
+    error,
   };
 }
