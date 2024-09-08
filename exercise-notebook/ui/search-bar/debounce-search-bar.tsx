@@ -8,7 +8,9 @@ type Stock = (typeof stock_list)[number];
 
 async function fetchStockList(url: string) {
   const response = await fetch(url);
-  const { data } = await response.json();
+  const { data }: { data: Stock[] } = await response.json();
+
+  if (Math.random() < 0.4) throw Error("서버 에러가 발생했습니다.");
 
   return data;
 }
@@ -16,7 +18,11 @@ async function fetchStockList(url: string) {
 export default function DebouncedSearchbar() {
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouceValue(query);
-  const { data: searchedStockList, isLoading } = useFetch<Stock[]>({
+  const {
+    data: searchedStockList,
+    isLoading,
+    error,
+  } = useFetch<Stock[], Error>({
     url: `/api/stocks?query=${debouncedQuery}`,
     fetcher: fetchStockList,
   });
@@ -34,9 +40,14 @@ export default function DebouncedSearchbar() {
           }}
         >
           <div>검색 결과</div>
-          {searchedStockList?.map((stock) => (
-            <div key={stock.name}>{stock.name}</div>
-          ))}
+
+          {!error ? (
+            searchedStockList?.map((stock) => (
+              <div key={stock.name}>{stock.name}</div>
+            ))
+          ) : (
+            <div>{error.message}</div>
+          )}
         </div>
       }
     </SearchInput>
