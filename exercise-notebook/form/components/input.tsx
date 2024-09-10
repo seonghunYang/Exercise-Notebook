@@ -49,6 +49,7 @@ export function Input({
         aria-labelledby={`label-${name}`}
         aria-describedby={`error-${name}`}
         aria-invalid={errorMessage ? true : false}
+        inputMode={"numeric"}
       />
       {errorMessage && (touched || wasSubmitted) && (
         <div id={`error-${name}`}>{errorMessage}</div>
