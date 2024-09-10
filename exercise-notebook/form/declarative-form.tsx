@@ -10,6 +10,8 @@ function ProgressiveFormRoot({ children }: React.PropsWithChildren<{}>) {
   const ref = useRef<HTMLFormElement>(null);
   const [formState, setFormState] = useState<Record<string, any>>({});
 
+  // 노드가 바뀔 수 있으니 이벤트 재등록
+  // 대신 formstate이 값이 바뀔 때 마다 갱신되지 않음
   useEffect(() => {
     const handleChage = (element: FormElements) => {
       setFormState((prev) => ({ ...prev, [element.name]: element.value }));
@@ -35,7 +37,7 @@ function ProgressiveFormRoot({ children }: React.PropsWithChildren<{}>) {
         }
       }
     };
-  }, []);
+  }, [formState]);
 
   return (
     <form ref={ref}>
@@ -59,6 +61,12 @@ function ProgressiveFormRoot({ children }: React.PropsWithChildren<{}>) {
           return false;
         }
 
+        if (typeof depends === "object") {
+          return Object.keys(depends).every((key) => {
+            if (formState[key] === depends[key]) return true;
+            return false;
+          });
+        }
         return false;
       })}
     </form>
@@ -78,9 +86,17 @@ export function ProForm() {
         <label>이름</label>
         <input name="name" />
       </ProgressiveForm.Step>
-      <ProgressiveForm.Step depends={"name"}>
+      <ProgressiveForm.Step depends={["name", "birthday"]}>
         <label>전화번호</label>
         <input name="phone" />
+      </ProgressiveForm.Step>
+      <ProgressiveForm.Step
+        depends={{
+          name: "홍길동",
+        }}
+      >
+        <label>생일</label>
+        <input name="birthday" />
       </ProgressiveForm.Step>
     </ProgressiveForm>
   );
