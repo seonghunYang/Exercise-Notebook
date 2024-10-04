@@ -1,6 +1,8 @@
 import { useState } from "react";
 
 import "./App.css";
+import { useEffect } from "react";
+import { useRef } from "react";
 
 function App() {
   const [memoList, setMemoList] = useState([]);
@@ -75,6 +77,7 @@ function MemoInput({ onSubmit }) {
 
 function MemoItem({ memo, onDelete, onChange }) {
   const [edit, setEdit] = useState(false);
+  const inputRef = useRef();
 
   const handleButtonClick = () => {
     onDelete?.(memo.id);
@@ -94,13 +97,25 @@ function MemoItem({ memo, onDelete, onChange }) {
     }
   };
 
+  const handleEditInputBlur = () => {
+    setEdit(false);
+  };
+
+  useEffect(() => {
+    if (edit) {
+      inputRef.current.focus();
+    }
+  }, [edit]);
+
   return (
     <div>
       {edit ? (
         <input
+          ref={inputRef}
           onKeyDown={handleEditInputKeydown}
           value={memo.text}
           onChange={handleEditInputChange}
+          onBlur={handleEditInputBlur}
         />
       ) : (
         <div onClick={handleTextClick}>{memo.text}</div>
