@@ -150,6 +150,44 @@ function useFetch(url, fetcher) {
   };
 }
 
+function useFetch(url, fetcher) {
+  const [data, setData] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffech(() => {
+    let ignore = false;
+
+    async function getData() {
+      try {
+        setIsLoading(true);
+        const data = await fetcher(url);
+
+        if (!ignore) {
+          setData(data);
+          setErrorMessage("");
+        }
+      } catch (e) {
+        setErrorMessage(e.errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    getData();
+
+    return () => {
+      ignore = true;
+    };
+  }, [url]);
+
+  return {
+    data,
+    isLoading,
+    errorMessage,
+  };
+}
+
 function SearchBar({ onSubmut }) {
   const [value, setValue] = useState("");
 
