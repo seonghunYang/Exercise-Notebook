@@ -22,42 +22,43 @@ import { useContext } from "react";
 // 유효성 검사:
 // 사용자 추가 시, 이름이 빈 문자열이거나 중복되는 경우 추가되지 않아야 하며, 경고 메시지를 표시하세요.
 
+const UsersContext = createContext(null);
+const UsersDispatchContext = createContext(null);
+
 function UsersReducer(users, action) {
-  switch (action.type) {
+  const { type, payload } = action;
+
+  switch (type) {
     case "add": {
       return [
         ...users,
         {
-          ...action.payload,
+          ...payload,
           id: crypto.randomUUID(),
           active: false,
         },
       ];
     }
-    case "delete": {
-      return users.filter((user) => user.id !== action.payload.id);
-    }
     case "active": {
       return users.map((user) => {
-        if (user.id === action.payload.id) {
+        if (user.id === payload.id) {
           return {
             ...user,
-            active: action.payload.active,
+            active: payload.active,
           };
         }
 
         return user;
       });
     }
-
+    case "delete": {
+      return users.filter((user) => user.id !== payload.id);
+    }
     default: {
-      throw Error("없는 action type 입니다.");
+      throw Error("잘못된거임");
     }
   }
 }
-
-const UsersContext = createContext(null);
-const UsersDispatchContext = createContext(null);
 
 function UsersProvider({ children }) {
   const [users, dispatch] = useReducer(UsersReducer, []);
