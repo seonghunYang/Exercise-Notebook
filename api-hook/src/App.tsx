@@ -1,35 +1,46 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import { useFetch } from "./hooks/use-fetch";
 
-function App() {
-  const [count, setCount] = useState(0)
+async function fetcher(url: string) {
+  try {
+    const response = await fetch(url);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    if (!response.ok) {
+      throw new Error("error network");
+    }
+    const data = response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch:", error);
+    throw error;
+  }
 }
 
-export default App
+interface UsersResponse {
+  data: UserResponse[];
+}
+
+interface UserResponse {
+  id: number;
+  email: string;
+}
+
+function App() {
+  const { data } = useFetch<UsersResponse>(
+    "https://reqres.in/api/users",
+    fetcher
+  );
+
+  const users = data ? data.data : [];
+
+  console.log(data);
+  return (
+    <>
+      {users.map((user) => (
+        <div key={user.id}>{user.email}</div>
+      ))}
+    </>
+  );
+}
+
+export default App;
