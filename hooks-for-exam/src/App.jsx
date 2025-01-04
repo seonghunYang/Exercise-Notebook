@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import "./App.css";
 import useFetch from "./hooks/use-fetch";
 import { useDebouncedValue } from "./hooks/use-debounced-value";
+import InfiniteScroll from "./components/infinite-scroll";
 
 const URL = "https://reqres.in/api/users";
 
@@ -31,14 +32,19 @@ function App() {
     setValue(e.target.value);
   };
 
-  console.log(debouncedValue);
+  const filteredUsers = useMemo(
+    () => users.filter((user) => user.email.includes(debouncedValue)),
+    [users, debouncedValue]
+  );
 
   return (
     <div>
+      {isLoading ? <div>loading</div> : null}
       <input value={value} onChange={handleInputChange} />
-      {users.map((user) => (
+      {filteredUsers.map((user) => (
         <div key={user.id}>{user.email}</div>
       ))}
+      <InfiniteScroll />
     </div>
   );
 }
