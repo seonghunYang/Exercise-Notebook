@@ -1,5 +1,7 @@
+import { useState } from "react";
 import "./App.css";
 import useFetch from "./hooks/use-fetch";
+import { useDebouncedValue } from "./hooks/use-debounced-value";
 
 const URL = "https://reqres.in/api/users";
 
@@ -19,14 +21,21 @@ async function fetcher(url) {
 }
 
 function App() {
+  const [value, setValue] = useState("");
+  const { debouncedValue } = useDebouncedValue(value, 1000);
   const { data, isLoading, error } = useFetch(URL, fetcher);
 
-  console.log(data, isLoading, error);
+  const users = data ? data.data : [];
 
-  const users = data.data;
+  const handleInputChange = (e) => {
+    setValue(e.target.value);
+  };
+
+  console.log(debouncedValue);
 
   return (
     <div>
+      <input value={value} onChange={handleInputChange} />
       {users.map((user) => (
         <div key={user.id}>{user.email}</div>
       ))}
